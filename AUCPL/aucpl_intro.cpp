@@ -2,12 +2,6 @@
 #include <map>
 using namespace std;
 
-int sortMe(vector<int> roundParam, vector<int> timeParam) {
-    for (int i = 0; i < size(roundParam); i++) {
-        if roundParam[i] < 
-    }
-}
-
 int main(void) {
     int numTeams, roundParticipated;
     map<string, vector<int>> teamInfo; // teamName: [total best 6 rounds, total lowest 6 time]

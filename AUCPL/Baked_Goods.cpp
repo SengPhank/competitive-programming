@@ -1,65 +1,43 @@
 #include <iostream>
-#include <stack>
-#include <set>
-#include <utility> // pair
-
+#include <map>
+#include <utility>
 // Incomplete
 
 // find largest subarray within -5 and 5 of each and use max    
 int main(void) {
-    std::set<std::pair<int, int>> toBakeSet;
-    std::stack<std::pair<int, int>> toBakeStack;
-    int numBakes, h, t;
+    std::cout<<"a"<<std::endl;
+    int numBakes;
     std::cin >> numBakes;
+    // find max time, group by max time
+    std::map<int, std::pair<int, int>> pq;
 
-    // convert to set to remove dupes and sort
+    int h, t;
     for (int i = 0; i < numBakes; i++) {
         std::cin >> h >> t;
-        toBakeSet.insert({h, t});
-    }
-    // convert to stack
-    for (std::pair<int, int> i : toBakeSet) { // Smallest Temp bottom, biggest top
-        toBakeStack.push(i);
+        pq.push({h, t});
     }
 
-    int minimumTime = 0;
-    int cookingTemp = -1; // degrees (c or f idc)
-    int initialTime = 0;
-
-    while (!toBakeStack.empty()) {
-        std::pair<int, int> bake = toBakeStack.top();
-
-        std::cout << "Current Temperature: " << bake.first << std::endl;
-        
-        // check in range, or changable.
-        if (cookingTemp == -1) { // On first cook
-            std::cout << "Initial cooking temperature: " << bake.first << std::endl;
-            cookingTemp = bake.first-5;
-            initialTime = bake.second;
-            toBakeStack.pop();       
-            continue;
-        }
-
-        // In range
-        if (bake.first <= cookingTemp+5 && bake.first >= cookingTemp-5) {
-            bake.second -= initialTime;
-            if (bake.second <= 0) {
-                toBakeStack.pop();
+    // find lowest temp to cook
+    int curTemp, curMaxTime;
+    int maxOveralTime = 0;
+    //std::cout << "calculating..." << std::endl;
+    while (!pq.empty()) {
+        curTemp = pq.top().first - 5; // can cook within a 5c range, so use that
+        curMaxTime = pq.top().second; // find maximum time withinn cooking range
+        std::cout << "cooking time: " << curTemp << std::endl;
+        while (!pq.empty() && pq.top().first >= curTemp-5 && pq.top().first <= curTemp+5) {
+            if (pq.top().second > curMaxTime) {
+                pq.top().second -= curMaxTime;
             }
-        } else { // Out of range, get highest Time there and reset all stats
-            std::cout << "Temperature not between " << cookingTemp-5 << " and " << cookingTemp+5 << std::endl;
-            minimumTime += currentMaxTime;
-            std::cout << "adding time: " << currentMaxTime << std::endl;
-            cookingTemp = -1;
-            currentMaxTime = 0;
-            continue;
+            std::cout << "cooked t: " << pq.top().first << ", minute: " << pq.top().second << std::endl;
+            pq.pop();
         }
-        
+
+        maxOveralTime += curMaxTime;
     }
 
-    minimumTime += currentMaxTime;
-    std::cout << minimumTime << std::endl;
-    // On exit, get final highest time and return
+    std::cout << maxOveralTime << std::endl;
+    return 0;
 }
 
 /*t1 
