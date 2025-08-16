@@ -14,46 +14,64 @@ int main(void) {
     }
     
     vector<string> people(numPpl);
+    unordered_map<string, int> peopleOrder;
     string tempS;
     for (int i = 0; i < numPpl; i++) {
         cin >> tempS;
         people[i] = tempS;
+        peopleOrder[tempS] = i;
     }
 
-    unordered_map<int, string> clean; // {node : people start}
+    unordered_map<int, vector<string>> clean; // {node : people start}
     for (int i = 0; i < numPpl; i++) {
         cin >> temp;
-        clean[temp] = people[i];
+        clean[temp].push_back(people[i]);
     }
 
-    // loop through from exit
-    queue<int> dfs;
-    dfs.push(numRooms);
+    // loop through from exit using bfs
+    queue<pair<int, int>> dfs; // {node, 'distance' from exit}
+    dfs.push({numRooms, 0});
 
     unordered_set<string> winners;
-    vector<string> b;
+    vector<pair<string, int>> wins; // sorted by time, then name
+
     while (!dfs.empty()) {
-        int a = dfs.front();
+        auto [a, b] = dfs.front();
         dfs.pop();
         for (int i : portal[a]) {
             if (clean.count(i)) {
-                winners.insert(clean[i]);
-                b.push_back(clean[i]);
+                for (string s : clean[i]) {
+                    winners.insert(s);
+                    wins.push_back({s, b});
+                }
+                
             }
-            dfs.push(i);
+            dfs.push({i, b + 1});
         }
     }
+    sort(wins.begin(), wins.end(), [&](pair<string, int> a, pair<string, int> b) {
+        if (a.second == b.second) {
+            // Sort by peopleOrder when timestamps are equal
+            return peopleOrder[a.first] < peopleOrder[b.first];
+        } else {
+            // Otherwise, sort by time
+            return a.second < b.second;
+        }
+    });
     // print winners
-    for (string i : b) {
-        cout << i << " ";
+    for (auto s : wins) {
+        cout << s.first << " ";
     }
-
     cout << endl;
+
+    // print losers
     for (string i : people) {
         if (!(winners.count(i))) {
             cout << i << " ";
         }
     }
+
+    cout << endl;
 
     return 0;
 }
