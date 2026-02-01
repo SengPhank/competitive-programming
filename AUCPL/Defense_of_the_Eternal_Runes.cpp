@@ -5,21 +5,23 @@ using namespace std;
 int main(void) {
     int numCase;
     cin >> numCase;
-    vector<int> dp(numCase+1, 100000+1);
-    dp[1] = 0;
-    for (int i = 0; i < numCase; i++) {
-        int a;
-        cin >> a;
-        dp[a-1] = min(dp[a-1]+1, dp[a]);
-        if (a%2 == 0) {
-            dp[a/2] = min(dp[a/2]+1, dp[a]);
+    for (int k = 0; k < numCase; k++) {
+        int hp;
+        cin >> hp;
+        vector<int> dp(hp+1, INT_MAX);
+        dp[hp] = 0;
+        for (int i = hp-1; i >= 0; i--) {
+            dp[i] = min(dp[i], dp[i+1]+1);
+            if (i*3 <= hp) dp[i] = min(dp[i], dp[i*3]+1); 
+            if (i*2 <= hp) dp[i] = min(dp[i], dp[i*2]+1); 
         }
-        if (a%2 == 0) {
-            dp[a/2] = min(dp[a/2]+1, dp[a]);
-        }
-    
-        cout << dp[a] << endl;
+
+        // for (int i = hp; i >= 0; i--) {
+        //     cout << "costs " << dp[i] << " to get down to hp " << i << endl;
+        // }
+        cout << dp[1] << endl;
     }
 
     return 0;
 }
+// 5 - > -1 = 4,
